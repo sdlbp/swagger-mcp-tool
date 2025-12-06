@@ -1,5 +1,7 @@
 # swagger-mcp-tool
 
+[![GitHub](https://img.shields.io/badge/GitHub-sdlbp%2Fswagger--mcp--tool-blue)](https://github.com/sdlbp/swagger-mcp-tool)
+
 基于 Bun 的 Swagger MCP 服务器，用于解析和查询 Swagger/OpenAPI 文档。为 AI 模型提供 Swagger 文档查询工具，辅助生成接口代码。例如：AI 可以查询 Swagger 文档获取接口定义，然后生成对应的 TypeScript 接口代码。
 
 ## 功能
