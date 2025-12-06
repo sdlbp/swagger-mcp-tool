@@ -7,16 +7,20 @@ export class SwaggerLoader {
   private docsUrl: string;
 
   private constructor(docsUrl?: string) {
-    this.docsUrl = docsUrl || process.env.DOCS_URL || "docs/swagger.json";
+    if (!docsUrl) {
+      throw new Error("❌ Error: Must provide Swagger document URL as a command line argument");
+    }
+    this.docsUrl = docsUrl;
   }
 
-  public static getInstance(docsUrl?: string): SwaggerLoader {
+  public static getInstance(): SwaggerLoader {
     if (!SwaggerLoader.instance) {
+      // 单例仅支持从启动参数中初始化
+      const docsUrl = process.argv[2];
+      if (!docsUrl) {
+        throw new Error("❌ Error: Swagger document URL must be provided as a command line argument");
+      }
       SwaggerLoader.instance = new SwaggerLoader(docsUrl);
-    } else if (docsUrl && SwaggerLoader.instance.docsUrl !== docsUrl) {
-      // 如果提供了新的 URL 且与当前不同，重置实例
-      SwaggerLoader.instance.docsUrl = docsUrl;
-      SwaggerLoader.instance.document = null; // 清除缓存的文档
     }
     return SwaggerLoader.instance;
   }
@@ -24,7 +28,7 @@ export class SwaggerLoader {
   public setDocsUrl(docsUrl: string): void {
     if (this.docsUrl !== docsUrl) {
       this.docsUrl = docsUrl;
-      this.document = null; // 清除缓存的文档
+      this.document = null; // Clear cached document
     }
   }
 

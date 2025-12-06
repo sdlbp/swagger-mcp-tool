@@ -1,6 +1,6 @@
 {
   "name": "swagger-mcp-tool",
-  "version": "0.0.1-beta.1",
+  "version": "0.0.1",
   "description": "Swagger MCP 工具，为 AI 提供 Swagger 文档查询能力，辅助生成接口代码。",
   "main": "dist/index.js",
   "type": "module",

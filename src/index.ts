@@ -7,15 +7,20 @@ import { getApiDetailTool } from "./tools/get_api_detail.js";
 import { getSchemaTool } from "./tools/get_schema.js";
 import { SwaggerLoader } from "./swagger-loader.js";
 
-// 解析命令行参数获取 Swagger 文档 URL
-const docsUrl = process.argv[2] || process.env.DOCS_URL;
+// Parse command line arguments to get Swagger document URL
+const docsUrl = process.argv[2];
 
-// 初始化 SwaggerLoader，如果提供了 URL 则使用它
-if (docsUrl) {
-  SwaggerLoader.getInstance(docsUrl);
+// Swagger document URL must be provided
+if (!docsUrl) {
+  console.error("❌ Error: Swagger document URL must be provided as a command line argument");
+  console.error("Usage: swagger-mcp-tool <swagger-docs-url>");
+  process.exit(1);
 }
 
-// 1、创建MCP服务器
+// Initialize SwaggerLoader
+SwaggerLoader.getInstance();
+
+// 1. Create MCP server
 const server = new McpServer(
   {
     name: "swagger-tools",
@@ -30,7 +35,7 @@ const server = new McpServer(
   }
 );
 
-// 2、注册工具
+// 2. Register tools
 server.registerTool(
   listApiGroupsTool.name,
   {
@@ -67,14 +72,14 @@ server.registerTool(
   getSchemaTool.handler
 );
 
-// 启动服务器
+// Start server
 async function startServer() {
   const transport = new StdioServerTransport();
   await server.connect(transport);
   const loader = SwaggerLoader.getInstance();
-  // 使用 stderr 输出日志，避免干扰 MCP 协议的 stdio 通信
-  console.error("🚀 Swagger MCP Server 服务器已启动！");
-  console.error(`📄 Swagger 文档源: ${loader.getDocsUrl()}`);
+  // Use stderr for logging to avoid interfering with MCP protocol stdio communication
+  console.error("🚀 Swagger MCP Server started!");
+  console.error(`📄 Swagger document source: ${loader.getDocsUrl()}`);
   console.error("Available tools:", [listApiGroupsTool.name, searchApisTool.name, getApiDetailTool.name, getSchemaTool.name].join(", "));
 }
 

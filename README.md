@@ -2,7 +2,7 @@
 
 [![GitHub](https://img.shields.io/badge/GitHub-sdlbp%2Fswagger--mcp--tool-blue)](https://github.com/sdlbp/swagger-mcp-tool)
 
-基于 Bun 的 Swagger MCP 服务器，用于解析和查询 Swagger/OpenAPI 文档。为 AI 模型提供 Swagger 文档查询工具，辅助生成接口代码。例如：AI 可以查询 Swagger 文档获取接口定义，然后生成对应的 TypeScript 接口代码。
+基于 Bun 的 Swagger MCP Server，用于解析和查询 Swagger/OpenAPI 文档。为 AI 模型提供 Swagger 文档查询工具，辅助生成接口代码。例如：AI 可以查询 Swagger 文档获取接口定义，然后生成对应的 TypeScript 接口代码。
 
 ## 功能
 
@@ -32,10 +32,9 @@ npx swagger-mcp-tool http://example.com/api/swagger.json
 
 # 使用本地文件路径
 npx swagger-mcp-tool ./docs/swagger.json
-
-# 使用默认路径（环境变量 DOCS_URL 或 docs/swagger.json）
-npx swagger-mcp-tool
 ```
+
+**注意**：必须提供 Swagger 文档地址作为命令行参数，否则程序会报错退出。
 
 ### 通过 bunx 使用
 
@@ -49,10 +48,10 @@ bunx swagger-mcp-tool ./docs/swagger.json
 
 ### 参数说明
 
-- **第一个参数**：Swagger 文档的 URL 或本地文件路径
+- **第一个参数（必需）**：Swagger 文档的 URL 或本地文件路径
   - 支持 HTTP/HTTPS URL（远程文档）
   - 支持本地文件路径（相对路径或绝对路径）
-  - 如果不提供参数，将使用环境变量 `DOCS_URL` 或默认路径 `docs/swagger.json`
+  - **必须提供此参数**，如果不提供，程序会报错并退出
 
 ## MCP 客户端配置
 
