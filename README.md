@@ -1,235 +1,168 @@
-# Bun MCP 服务器
+# swagger-mcp-tool
 
-基于 Bun 技术栈的 MCP (Model Context Protocol) 服务器，专为 Cursor 设计。
+基于 Bun 的 Swagger MCP 服务器，用于解析和查询 Swagger/OpenAPI 文档。为 AI 模型提供 Swagger 文档查询工具，辅助生成接口代码。例如：AI 可以查询 Swagger 文档获取接口定义，然后生成对应的 TypeScript 接口代码。
 
-## 功能特性
+## 功能
 
--   🚀 **基于 Bun 的高性能运行时**
--   🔧 **5 个实用工具** (计算器、文本处理、时间、随机数、文件操作)
--   📝 **TypeScript 支持**
--   🎯 **Cursor 集成**
--   🔄 **MCP 协议兼容**
+提供 Swagger/OpenAPI 文档的查询工具，支持从本地文件或远程 URL 加载文档。AI 可以通过这些工具查询接口定义、Schema 等信息，用于生成 TypeScript 类型定义和 API 调用代码。
+
+## 前置使用条件
+
+### 1. 安装 Bun 运行时
+
+项目依赖 Bun 运行时环境，使用前需要先安装 Bun：
+
+```bash
+curl -fsSL https://bun.sh/install | bash
+```
+
+### 2. 准备 Swagger 文档
+
+确保你有可用的 Swagger/OpenAPI 文档（本地文件路径或远程 URL）
+
+## 使用方式
+
+### 通过 npx 使用（推荐）
+
+```bash
+# 使用远程 URL
+npx swagger-mcp-tool http://example.com/api/swagger.json
+
+# 使用本地文件路径
+npx swagger-mcp-tool ./docs/swagger.json
+
+# 使用默认路径（环境变量 DOCS_URL 或 docs/swagger.json）
+npx swagger-mcp-tool
+```
+
+### 通过 bunx 使用
+
+```bash
+# 使用远程 URL
+bunx swagger-mcp-tool http://example.com/api/swagger.json
+
+# 使用本地文件路径
+bunx swagger-mcp-tool ./docs/swagger.json
+```
+
+### 参数说明
+
+- **第一个参数**：Swagger 文档的 URL 或本地文件路径
+  - 支持 HTTP/HTTPS URL（远程文档）
+  - 支持本地文件路径（相对路径或绝对路径）
+  - 如果不提供参数，将使用环境变量 `DOCS_URL` 或默认路径 `docs/swagger.json`
+
+## MCP 客户端配置
+
+### 在 Cursor 中配置
+
+在 Cursor 的 MCP 配置文件中（通常是 `~/.cursor/mcp.json` 或项目中的 `.cursorrules`），添加以下配置：
+
+#### 使用远程 URL
+
+```json
+{
+  "mcpServers": {
+    "swagger-tools": {
+      "command": "npx",
+      "args": ["swagger-mcp-tool", "http://example.com/api/swagger.json"]
+    }
+  }
+}
+```
+
+#### 使用本地文件
+
+```json
+{
+  "mcpServers": {
+    "swagger-tools": {
+      "command": "npx",
+      "args": ["swagger-mcp-tool", "/path/to/your/swagger.json"]
+    }
+  }
+}
+```
+
+#### 使用 bunx（如果已安装 Bun）
+
+```json
+{
+  "mcpServers": {
+    "swagger-tools": {
+      "command": "bunx",
+      "args": ["swagger-mcp-tool", "http://example.com/api/swagger.json"]
+    }
+  }
+}
+```
+
+**注意**：
+
+- 使用绝对路径更可靠
+- 配置后需要重启 Cursor 才能生效
 
 ## 可用工具
 
-### 1. 计算器 (calculator)
+### 1. list_api_groups
 
-执行基本的数学计算操作
+**功能**：列出所有 API 分组（标签）
 
-**参数：**
+**描述**：从 Swagger 文档中获取所有 API 分组信息。如果文档中没有定义顶层标签，会自动从路径中收集所有使用的标签。
 
--   `operation` (string): 操作类型 ("add", "subtract", "multiply", "divide")
--   `a` (number): 第一个数字
--   `b` (number): 第二个数字
+**使用场景**：
 
-**示例：**
+- 查看 API 文档中有哪些功能模块
+- 了解 API 的组织结构
 
-```json
-{
-    "operation": "add",
-    "a": 10,
-    "b": 5
-}
-```
+### 2. search_apis
 
-### 2. 文本处理器 (text_processor)
+**功能**：搜索 API（支持按标签或关键词）
 
-处理文本字符串
+**描述**：根据标签或关键词搜索匹配的 API。支持在路径、摘要、描述和操作 ID 中进行搜索。
 
-**参数：**
+**参数**：
 
--   `text` (string): 要处理的文本
--   `operation` (string): 处理操作 ("uppercase", "lowercase", "reverse", "word_count")
+- `tag`（可选）：按标签过滤 API
+- `keyword`（可选）：在路径、摘要或描述中搜索关键词
 
-**示例：**
+**使用场景**：
 
-```json
-{
-    "text": "Hello World",
-    "operation": "uppercase"
-}
-```
+- 查找特定功能模块的 API
+- 根据关键词快速定位相关接口
 
-### 3. 时间信息 (time_info)
+### 3. get_api_detail
 
-获取当前时间信息
+**功能**：获取 API 详细信息
 
-**参数：** 无
+**描述**：获取指定路径和方法的完整 API 定义，包括请求参数、响应结构、描述等详细信息。会自动合并路径级别的参数。
 
-**返回：** 当前时间、时间戳和时区信息
+**参数**：
 
-### 4. 随机数生成器 (random_generator)
+- `path`：API 路径，如 `/user/v1/account/unbind`
+- `method`：HTTP 方法，如 `get`、`post`、`put`、`delete`
 
-生成指定范围内的随机数
+**使用场景**：
 
-**参数：**
+- 查看特定接口的完整定义
+- 生成 API 调用代码
+- 了解接口的请求和响应结构
 
--   `min` (number): 最小值
--   `max` (number): 最大值
--   `count` (number, 可选): 生成数量，默认为 1
+### 4. get_schema
 
-**示例：**
+**功能**：获取 Schema 定义
 
-```json
-{
-    "min": 1,
-    "max": 100,
-    "count": 5
-}
-```
+**描述**：通过引用或名称获取数据模型的 Schema 定义。支持完整的 Schema 引用格式（如 `#/components/schemas/UserSetupParam`）或简化的名称格式（如 `UserSetupParam`）。
 
-### 5. 文件操作 (file_operations)
+**参数**：
 
-执行基本的文件操作
+- `ref`：Schema 引用或名称，如 `#/components/schemas/UserSetupParam` 或 `UserSetupParam`
 
-**参数：**
+**使用场景**：
 
--   `operation` (string): 操作类型 ("read", "write", "list", "exists")
--   `path` (string): 文件或目录路径
--   `content` (string, 可选): 要写入的内容（仅用于 write 操作）
-
-**示例：**
-
-```json
-{
-    "operation": "read",
-    "path": "/path/to/file.txt"
-}
-```
-
-## 安装和配置
-
-### 1. 安装依赖
-
-```bash
-bun install
-```
-
-### 2. 在 Cursor 中配置
-
-将以下配置添加到 Cursor 的 MCP 设置中：
-
-```json
-{
-    "mcpServers": {
-        "bun-mcp-server": {
-            "command": "bun",
-            "args": ["run", "/path/to/your/bun-mcp-server/src/index.ts"],
-            "env": {
-                "NODE_ENV": "development"
-            }
-        }
-    }
-}
-```
-
-### 3. 启动服务器
-
-```bash
-# 开发模式
-bun run dev
-
-# 生产模式
-bun run start
-```
-
-## 使用示例
-
-在 Cursor 中，您可以直接使用这些工具：
-
-### 数学计算
-
-```
-请计算 15 + 27 的结果
-```
-
-### 文本处理
-
-```
-请将 "Hello World" 转换为大写
-```
-
-### 时间查询
-
-```
-现在是什么时间？
-```
-
-### 随机数生成
-
-```
-请生成 5 个 1 到 100 之间的随机数
-```
-
-### 文件操作
-
-```
-请检查 /path/to/file.txt 是否存在
-```
-
-## 项目结构
-
-```
-bun-mcp-server/
-├── src/
-│   └── index.ts              # MCP 服务器主文件
-├── package.json              # 项目配置
-├── tsconfig.json             # TypeScript 配置
-├── cursor-mcp-config.json    # Cursor MCP 配置示例
-└── README.md                # 项目文档
-```
-
-## 开发
-
-```bash
-# 开发模式 (热重载)
-bun run dev
-
-# 生产模式
-bun run start
-
-# 构建项目
-bun run build
-
-# 运行测试
-bun test
-```
-
-## 技术栈
-
--   **运行时**: Bun
--   **语言**: TypeScript
--   **MCP 协议**: @modelcontextprotocol/sdk
--   **验证**: Zod
-
-## 扩展建议
-
-1. **添加更多工具**: 数据库操作、API 调用、图像处理等
-2. **错误处理**: 更详细的错误信息和日志记录
-3. **配置管理**: 支持环境变量和配置文件
-4. **安全性**: 添加权限控制和输入验证
-5. **监控**: 添加性能监控和指标收集
-
-## 故障排除
-
-### 常见问题
-
-1. **MCP 服务器无法启动**
-
-    - 检查 Bun 是否正确安装
-    - 确认路径配置正确
-    - 查看控制台错误信息
-
-2. **工具调用失败**
-
-    - 检查参数格式是否正确
-    - 确认文件路径存在且可访问
-    - 查看错误消息获取详细信息
-
-3. **Cursor 无法连接**
-    - 确认 MCP 配置正确
-    - 重启 Cursor
-    - 检查服务器是否正在运行
+- 查看数据模型的定义
+- 生成 TypeScript 类型定义
+- 了解请求/响应的数据结构
 
 ## 许可证
 

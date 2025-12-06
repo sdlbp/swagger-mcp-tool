@@ -1,25 +1,41 @@
 {
-  "name": "bun-mcp-server",
-  "version": "1.0.0",
-  "description": "基于 Bun 的 MCP 服务器示例，供 Cursor 使用",
-  "main": "src/index.ts",
+  "name": "swagger-mcp-tool",
+  "version": "0.0.1-beta.1",
+  "description": "Swagger MCP 工具，为 AI 提供 Swagger 文档查询能力，辅助生成接口代码。",
+  "main": "dist/index.js",
   "type": "module",
+  "bin": {
+    "swagger-mcp-tool": "./dist/index.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "dev": "bun run --watch src/index.ts",
     "start": "bun run src/index.ts",
     "build": "bun build src/index.ts --outdir dist --target node",
-    "test": "bun test"
+    "test": "bun test",
+    "prepublishOnly": "bun run build"
   },
-  "keywords": ["mcp", "bun", "cursor", "ai", "tools"],
-  "author": "Your Name",
+  "keywords": [
+    "mcp",
+    "swagger",
+    "ai",
+    "tools"
+  ],
+  "author": "lbp@163.com",
   "license": "MIT",
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^0.4.0",
-    "zod": "^3.22.4"
+    "@modelcontextprotocol/sdk": "^1.21.0",
+    "swagger-parser": "^10.0.3",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@types/bun": "^1.2.21",
     "@types/node": "^20.10.0",
+    "openapi-types": "^12.1.3",
     "typescript": "^5.3.0"
   },
   "engines": {
