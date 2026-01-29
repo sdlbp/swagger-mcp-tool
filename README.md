@@ -2,6 +2,11 @@
 
 [![GitHub](https://img.shields.io/badge/GitHub-sdlbp%2Fswagger--mcp--tool-blue)](https://github.com/sdlbp/swagger-mcp-tool)
 
+<!-- translate:off -->
+<!-- LANGUAGE SWITCHER -->
+[Chinese (Simplified Han script)](./docs/README-zh.md) 
+<!-- translate:on -->
+
 ## What is swagger-mcp-tool
 
 An MCP (Model Context Protocol) server that loads Swagger/OpenAPI documents and exposes query tools for AI assistants and MCP clients.
