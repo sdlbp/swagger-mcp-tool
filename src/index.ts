@@ -1,10 +1,16 @@
 #!/usr/bin/env node
+import { createRequire } from "module";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+
+const require = createRequire(import.meta.url);
+const pkg = require("../package.json") as { name: string; version: string };
 import { listApiGroupsTool } from "./tools/list_api_groups.js";
 import { searchApisTool } from "./tools/search_apis.js";
 import { getApiDetailTool } from "./tools/get_api_detail.js";
 import { getSchemaTool } from "./tools/get_schema.js";
+import { typescriptGeneratePrompt } from "./prompts/typescript_generate.js";
+import { apiCallGeneratePrompt } from "./prompts/api_call_generate.js";
 import { SwaggerLoader } from "./swagger-loader.js";
 
 // Parse command line arguments to get Swagger document URL
@@ -23,14 +29,13 @@ SwaggerLoader.getInstance();
 // 1. Create MCP server
 const server = new McpServer(
   {
-    name: "swagger-tools",
-    version: "1.0.0",
+    name: pkg.name,
+    version: pkg.version,
   },
   {
     capabilities: {
-      tools: {
-        listChanged: true,
-      },
+      tools: { listChanged: true },
+      prompts: { listChanged: true },
     },
   }
 );
@@ -72,6 +77,24 @@ server.registerTool(
   getSchemaTool.handler
 );
 
+// 3. Register prompts
+server.registerPrompt(
+  typescriptGeneratePrompt.name,
+  {
+    title: typescriptGeneratePrompt.title,
+    description: typescriptGeneratePrompt.description,
+  },
+  typescriptGeneratePrompt.handler
+);
+server.registerPrompt(
+  apiCallGeneratePrompt.name,
+  {
+    title: apiCallGeneratePrompt.title,
+    description: apiCallGeneratePrompt.description,
+  },
+  apiCallGeneratePrompt.handler
+);
+
 // Start server
 async function startServer() {
   const transport = new StdioServerTransport();
@@ -81,6 +104,7 @@ async function startServer() {
   console.error("🚀 Swagger MCP Server started!");
   console.error(`📄 Swagger document source: ${loader.getDocsUrl()}`);
   console.error("Available tools:", [listApiGroupsTool.name, searchApisTool.name, getApiDetailTool.name, getSchemaTool.name].join(", "));
+  console.error("Available prompts:", [typescriptGeneratePrompt.name, apiCallGeneratePrompt.name].join(", "));
 }
 
 startServer().catch(console.error);

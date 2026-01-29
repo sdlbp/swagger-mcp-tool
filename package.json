@@ -18,7 +18,8 @@
     "build": "bun build src/index.ts --outdir dist --target node --minify",
     "test": "bun test",
     "prepublishOnly": "bun run build",
-    "release": "npm publish"
+    "release": "npm publish",
+    "inspector": "npx @modelcontextprotocol/inspector node dist/index.js http://esg.emp-dev.k8stob.jdtiot.com/api-docs"
   },
   "keywords": [
     "mcp",

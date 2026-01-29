@@ -58,6 +58,8 @@ npm install -g swagger-mcp-tool
 | `search_apis` | 工具 | 按标签或关键词搜索 API | `tag`（可选），`keyword`（可选） | JSON API 摘要数组 |
 | `get_api_detail` | 工具 | 获取指定接口的完整定义 | `path`，`method` | JSON 操作对象 |
 | `get_schema` | 工具 | 根据 `$ref` 或名称获取 Schema | `ref` | JSON Schema 对象 |
+| `schema_to_ts_types` | Prompt | 将 Schema 转为 TypeScript 类型定义 | `schema_ref` | 一段 TypeScript 类型代码 |
+| `api_call_example` | Prompt | 根据接口定义生成 API 调用示例（fetch/axios） | `path`，`method`，`style`（可选） | 一段 TypeScript 调用示例代码 |
 
 ## 许可证
 
