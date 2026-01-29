@@ -1,7 +1,7 @@
 {
   "name": "swagger-mcp-tool",
   "version": "0.0.2",
-  "description": "Swagger MCP 工具，为 AI 提供 Swagger 文档查询能力，辅助生成接口代码。",
+  "description": "Swagger MCP tool that provides Swagger/OpenAPI document query capabilities for AI assistants and MCP clients.",
   "main": "dist/index.js",
   "type": "module",
   "bin": {

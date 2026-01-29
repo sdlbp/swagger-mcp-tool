@@ -2,94 +2,63 @@
 
 [![GitHub](https://img.shields.io/badge/GitHub-sdlbp%2Fswagger--mcp--tool-blue)](https://github.com/sdlbp/swagger-mcp-tool)
 
-基于 Node.js 的 Swagger MCP Server，用于解析和查询 Swagger/OpenAPI 文档。为 AI 模型提供 Swagger 文档查询工具，辅助生成接口代码。例如：AI 可以查询 Swagger 文档获取接口定义，然后生成对应的 TypeScript 接口代码。
+## What is swagger-mcp-tool
 
-## 功能
+An MCP (Model Context Protocol) server that loads Swagger/OpenAPI documents and exposes query tools for AI assistants and MCP clients.
 
-## 用户使用
+## Features
 
-### 1. 准备环境
+- Generate API-related code directly through an agent using Swagger docs.
+- Generate response types and interface definitions for TypeScript projects.
 
-- 仅需 Node.js（建议 18+）
+## Installation
+
+### Prerequisites
+
+- Node.js >= 18
+- npm or npx (for running the CLI)
+- Bun >= 1.0.0 (optional, for development/build)
+
+### Install
 
 ```bash
-node -v
+npm install -g swagger-mcp-tool
 ```
 
-### 2. 准备 Swagger 文档
+## Usage
 
-准备 Swagger/OpenAPI 文档（本地文件路径或远程 URL）。
-
-### 3. 运行命令
-
-```bash
-# 使用远程 URL
-npx swagger-mcp-tool http://example.com/api/swagger.json
-
-# 使用本地文件路径
-npx swagger-mcp-tool ./docs/swagger.json
-```
-
-### 4. 参数说明
-
-- 第一个参数必填：Swagger 文档的 URL 或本地文件路径
-
-### 5. MCP 客户端配置（Cursor 示例）
-
-在 Cursor 的 MCP 配置文件中（通常是 `~/.cursor/mcp.json` 或项目中的 `.cursorrules`），添加：
+Add one or more server entries to your MCP client config (example for Cursor: `~/.cursor/mcp.json`). Use a separate server name per Swagger/OpenAPI document to support multiple projects in parallel.
 
 ```json
 {
   "mcpServers": {
-    "swagger-tools": {
+    "swagger-petstore": {
       "command": "npx",
-      "args": ["swagger-mcp-tool", "http://example.com/api/swagger.json"]
+      "args": ["-y", "swagger-mcp-tool", "https://example.com/petstore.json"]
+    },
+    "swagger-orders": {
+      "command": "npx",
+      "args": ["-y", "swagger-mcp-tool", "./openapi/orders.yaml"]
     }
   }
 }
 ```
 
-## 开发
+### Chat panel examples
 
-### 1. 安装 Bun（开发/构建用）
+After the server is configured, describe what you want to add in the chat panel. Start with "View the Swagger doc" to help the agent trigger this tool, for example:
 
-```bash
-curl -fsSL https://bun.sh/install | bash
-```
+"View the Swagger doc and complete the refund API for the order domain."
 
-### 2. 本地开发运行
+## API
 
-```bash
-bun run dev
-```
+| Tool | Description | Parameters | Output |
+|------|-------------|------------|--------|
+| `list_api_groups` | List all API groups (tags) | None | JSON array of tag objects |
+| `search_apis` | Search APIs by tag or keyword | `tag` (optional), `keyword` (optional) | JSON array of API summaries |
+| `get_api_detail` | Get full operation detail | `path`, `method` | JSON operation object |
+| `get_schema` | Get schema by `$ref` or name | `ref` | JSON schema object |
 
-### 3. 构建产物（单文件 JS）
+## License
 
-```bash
-bun run build
-node dist/index.js http://example.com/api/swagger.json
-```
-
-构建后目录结构：
-
-```
-dist/
-  index.js
-```
-
-### 4. 一键发布（npm）
-
-```bash
-npm run release
-```
-
-## 可用工具（简述）
-
-- `list_api_groups`：列出 API 分组
-- `search_apis`：按标签或关键词搜索 API
-- `get_api_detail`：获取指定接口的详细定义
-- `get_schema`：获取数据模型 Schema 定义
-
-## 许可证
-
-MIT License
+This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details.
