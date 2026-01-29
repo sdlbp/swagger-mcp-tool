@@ -1,6 +1,6 @@
 {
   "name": "swagger-mcp-tool",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Swagger MCP tool that provides Swagger/OpenAPI document query capabilities for AI assistants and MCP clients.",
   "main": "dist/index.js",
   "type": "module",
