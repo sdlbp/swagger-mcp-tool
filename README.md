@@ -4,7 +4,7 @@
 
 <!-- translate:off -->
 <!-- LANGUAGE SWITCHER -->
-[Chinese (Simplified Han script)](./docs/README-zh.md) 
+[简体中文](./docs/README-zh.md) 
 <!-- translate:on -->
 
 ## What is swagger-mcp-tool
